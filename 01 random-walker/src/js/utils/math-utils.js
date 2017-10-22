@@ -55,13 +55,13 @@ export function degToRad(degrees) {
 //
 // Randomly pick a number between min and max.
 // When max wasn't given, the range automatically start from 0 to max,
-// so randomInt(5) returns a random number between 0 and 5
+// so randomFloat(4.6) returns a random number between 0 and 4.6
 export function randomFloat(min, max) {
   if(!max) {
     max = min
     min = 0
   }
-  return Math.floor(Math.random() * (max - min + 1)) + min
+  return Math.random() * (max - min) + min
 }
 
 

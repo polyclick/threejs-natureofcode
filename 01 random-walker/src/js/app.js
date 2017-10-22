@@ -4,6 +4,7 @@ import dat from 'dat-gui'
 
 // includes
 import WalkerScene from './scenes/walker-scene.js'
+import VectorScene from './scenes/vector-scene.js'
 
 
 
@@ -46,7 +47,8 @@ class App {
     document.body.appendChild(this.renderer.domElement)
 
     // scene
-    this.scene = new WalkerScene(this.viewportWidth, this.viewportHeight, this.renderer, this.gui)
+    // this.scene = new WalkerScene(this.viewportWidth, this.viewportHeight, this.renderer, this.gui)
+    this.scene = new VectorScene(this.viewportWidth, this.viewportHeight, this.renderer, this.gui)
 
     // render & animation ticker
     TweenMax.ticker.fps(60)

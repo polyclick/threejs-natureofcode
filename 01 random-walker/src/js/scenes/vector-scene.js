@@ -4,18 +4,16 @@
 import OrbitControls from 'three/controls/OrbitControls'
 
 // includes
-import SquareWalker from './walkers/square-walker.js'
-import RadiusWalker from './walkers/radius-walker.js'
-import TriangleWalker from './walkers/triangle-walker.js'
-import ShaderWalker from './walkers/shader-walker.js'
+import SphereWalker from './walkers/sphere-walker.js'
+import * as utils from '../utils/math-utils.js'
 
 
 
 ///////////////////////////////////////////////////////////////////////////////
-//// WALKER SCENE
+//// VECTOR SCENE
 ///////////////////////////////////////////////////////////////////////////////
 
-export default class WalkerScene {
+export default class VectorScene {
 
 
 
@@ -35,7 +33,6 @@ export default class WalkerScene {
     }
 
 
-
     setup() {
       this.setupCameras()
       this.setupLights()
@@ -43,11 +40,10 @@ export default class WalkerScene {
     }
 
 
-
     setupCameras() {
 
       // default camera
-      this.camera = new THREE.PerspectiveCamera(70, this.viewportWidth / this.viewportHeight, 0.0001, 10000)
+      this.camera = new THREE.PerspectiveCamera(90, this.viewportWidth / this.viewportHeight, 0.0001, 10000)
       this.camera.position.z = 400
 
       // default camera debug
@@ -70,25 +66,35 @@ export default class WalkerScene {
     }
 
 
-
     setupLights() {
       // add lights
     }
 
 
-
     setupModels() {
-      this.walkers = [
-        new ShaderWalker(this.scene, 0x486bff),
 
-        new ShaderWalker(this.scene, 0x222222),
-        new ShaderWalker(this.scene, 0x444444),
-        new ShaderWalker(this.scene, 0x666666),
-        new ShaderWalker(this.scene, 0x888888),
-        new ShaderWalker(this.scene, 0xaaaaaa),
-        new ShaderWalker(this.scene, 0xcccccc),
-        new ShaderWalker(this.scene, 0xeeeeee)
-      ]
+      this.box = new THREE.Mesh(
+          new THREE.BoxGeometry(800, 800, 800, 20, 20, 20),
+          new THREE.MeshBasicMaterial({ color: 0x666666, wireframe: true })
+      )
+      this.box.geometry.computeBoundingBox()
+      this.scene.add(this.box)
+
+
+      this.walkers = []
+
+      let i, walker
+      for(i = 0; i < 50; i++) {
+        walker = new SphereWalker(this.box.geometry.boundingBox)
+        walker.setup()
+
+        this.walkers.push(walker)
+        this.scene.add(walker.object)
+      }
+
+      // this.walker = new SphereWalker(this.box.geometry.boundingBox)
+      // this.walker.setup()
+      // this.scene.add(this.walker.object)
     }
 
 
@@ -98,29 +104,31 @@ export default class WalkerScene {
     ///////////////////////////////////////////////////////////////////////////////
 
     update(clock) {
-      this.walkers.forEach(w => w.walk())
+      this.walkers.forEach((w) => {
+        w.update()
+        w.edges()
+        w.apply()
+      })
+
       this.controls.update()
     }
 
 
-
     draw(clock) {
-      this.walkers.forEach((w, index) => {
-        w.draw(clock.getElapsedTime() + (index * 0.085))
+      this.walkers.forEach((w) => {
+        w.draw()
       })
 
       this.renderer.render(this.scene, this.camera)
     }
 
 
-
     resize(viewportWidth, viewportHeight) {
       this.viewportWidth = viewportWidth
       this.viewportHeight = viewportHeight
 
-      this.walkers.forEach(w => w.resize(this.viewportWidth, this.viewportHeight))
-
       this.camera.aspect = this.viewportWidth / this.viewportHeight
       this.camera.updateProjectionMatrix()
     }
+
   }

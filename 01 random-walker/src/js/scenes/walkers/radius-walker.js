@@ -1,13 +1,12 @@
-import * as utils from './utils/math-utils.js'
+import * as utils from '../../utils/math-utils.js'
 
 export default class RadiusWalker {
 
-  constructor(scene, color, radius) {
+  constructor(scene, color) {
     this.scene = scene
     this.color = color
-    this.radius = radius
 
-    this.MAX_POINTS = 60000
+    this.MAX_POINTS = 30000
 
     this.position = new THREE.Vector3(0.0, 0.0, 0.0)
 
@@ -22,8 +21,8 @@ export default class RadiusWalker {
     this.geometry = new THREE.BufferGeometry()
     this.geometry.addAttribute(`position`, new THREE.BufferAttribute(this.positions, 3))
 
-    this.material = new THREE.MeshBasicMaterial({ color: this.color, side: THREE.DoubleSide, transparent: true, opacity: 0.8 })
-    this.line = new THREE.Mesh(this.geometry, this.material)
+    this.material = new THREE.LineBasicMaterial({ color: this.color, side: THREE.DoubleSide })
+    this.line = new THREE.Line(this.geometry, this.material)
     this.scene.add(this.line)
   }
 
@@ -33,8 +32,11 @@ export default class RadiusWalker {
     // don't walk if we reached our max allowed point for this line
     if(this.drawRange > this.MAX_POINTS) return
 
+    // distance to travel
+    let radius = 2
+
     // random point on sphere using current position as the origin
-    let point = utils.randomPointAtRadius(this.position.x, this.position.y, this.position.z, this.radius)
+    let point = utils.randomPointAtRadius(this.position.x, this.position.y, this.position.z, radius)
 
     // set new position
     this.position.set(point[0], point[1], point[2])

@@ -1,7 +1,7 @@
-import * as utils from './utils/math-utils.js'
+import * as utils from '../../utils/math-utils.js'
 
-import vertexShader from '../shaders/polyshader-vert.glsl!text'
-import fragmentShader from '../shaders/polyshader-frag.glsl!text'
+import vertexShader from '../../../shaders/polyshader-vert.glsl!text'
+import fragmentShader from '../../../shaders/polyshader-frag.glsl!text'
 
 export default class ShaderWalker {
 

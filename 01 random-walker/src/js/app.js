@@ -6,6 +6,13 @@ import dat from 'dat-gui'
 import OrbitControls from 'three/controls/OrbitControls'
 
 
+// includes
+import SquareWalker from './square-walker.js'
+import RadiusWalker from './radius-walker.js'
+import TriangleWalker from './triangle-walker.js'
+import ShaderWalker from './shader-walker.js'
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //// APPLICATION CLASS
@@ -42,7 +49,7 @@ class App {
     this.renderer = new THREE.WebGLRenderer({ antialias: true })
     this.renderer.setPixelRatio(window.devicePixelRatio)
     this.renderer.setSize(this.sceneWidth, this.sceneHeight)
-    this.renderer.setClearColor(0xffffff, 1)
+    this.renderer.setClearColor(0x000000, 1)
     document.body.appendChild(this.renderer.domElement)
 
     // scene
@@ -71,7 +78,7 @@ class App {
   setupCameras() {
 
     // default camera
-    this.camera = new THREE.PerspectiveCamera(70, this.sceneWidth / this.sceneHeight, 1, 1000)
+    this.camera = new THREE.PerspectiveCamera(70, this.sceneWidth / this.sceneHeight, 0.0001, 10000)
     this.camera.position.z = 400
 
     // default camera debug
@@ -87,6 +94,10 @@ class App {
 
     // controls
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
+    this.controls.enableDamping = true
+    this.controls.dampingFactor = 0.1
+    this.controls.rotateSpeed = 0.5
+    this.controls.target = new THREE.Vector3(0, 0, 0)
   }
 
 
@@ -98,45 +109,17 @@ class App {
 
 
   setupModels() {
-    // create or load models here
-    // example: cube with red wireframe material
-    let geometry = new THREE.BoxGeometry(200, 200, 200)
-    let material = new THREE.MeshNormalMaterial()
-    this.mesh = new THREE.Mesh(geometry, material)
-    this.scene.add(this.mesh)
+    this.walkers = [
+      new ShaderWalker(this.scene, 0x486bff),
 
-
-    // // example: how to load an obj file
-    // //
-    // // at the top, add:
-    // //   - import MTLLoader from 'three/loaders/MTLLoader'
-    // //   - import OBJLoader from 'three/loaders/OBJLoader'
-    // const modelRoot = 'models/'
-
-    // // load object material file first
-    // const mtlLoader = new MTLLoader()
-    // mtlLoader.setPath(modelRoot)
-    // mtlLoader.load('object.mtl', (materials) => {
-
-    //   // load any material texture dependencies
-    //   materials.preload()
-
-    //   // make object loader
-    //   var objLoader = new OBJLoader()
-    //   objLoader.setPath(modelRoot)
-    //   objLoader.setMaterials(materials)
-
-    //   // load object
-    //   objLoader.load('object.obj', (object) => {
-    //     object.traverse((child) => {
-    //       if(child instanceof THREE.Mesh) {
-    //         child.material = new THREE.MeshBasicMaterial({ color: 0xff00ff, wireframe: true })
-    //       }
-    //     })
-
-    //     this.scene.add(object)
-    //   })
-    // })
+      new ShaderWalker(this.scene, 0x222222),
+      new ShaderWalker(this.scene, 0x444444),
+      new ShaderWalker(this.scene, 0x666666),
+      new ShaderWalker(this.scene, 0x888888),
+      new ShaderWalker(this.scene, 0xaaaaaa),
+      new ShaderWalker(this.scene, 0xcccccc),
+      new ShaderWalker(this.scene, 0xeeeeee)
+    ]
   }
 
 
@@ -151,13 +134,16 @@ class App {
     if(this.controls)
       this.controls.update()
 
-    this.mesh.rotation.x += 0.005
-    this.mesh.rotation.y += 0.01
+    this.walkers.forEach(w => w.walk())
   }
 
 
 
   draw() {
+    this.walkers.forEach((w, index) => {
+      w.draw(this.clock.getElapsedTime() + (index * 0.085))
+    })
+
     this.renderer.render(this.scene, this.camera)
   }
 
@@ -186,6 +172,9 @@ class App {
 
     // update renderer
     this.renderer.setSize(this.sceneWidth, this.sceneHeight)
+
+    // update walkers
+    this.walkers.forEach(w => w.resize(this.sceneWidth, this.sceneHeight))
   }
 
 }

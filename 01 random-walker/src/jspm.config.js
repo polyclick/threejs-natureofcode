@@ -58,6 +58,7 @@ SystemJS.config({
   map: {
     "dat-gui": "npm:dat-gui@0.5.0",
     "gsap": "npm:gsap@1.20.3",
+    "text": "github:systemjs/plugin-text@0.0.11",
     "three": "github:mrdoob/three.js@master"
   },
   packages: {

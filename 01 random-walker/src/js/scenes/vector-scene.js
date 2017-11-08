@@ -27,6 +27,8 @@ export default class VectorScene {
       this.renderer = renderer
       this.gui = gui
 
+      this.spacebarDown = false
+
       this.scene = new THREE.Scene()
 
       this.setup()
@@ -67,7 +69,17 @@ export default class VectorScene {
 
 
     setupLights() {
-      // add lights
+      this.pointLight1 = new THREE.PointLight(0x00a0b0, 0.4)
+      this.pointLight1.position.set(-200, -300, -50)
+      this.scene.add(this.pointLight1)
+
+      this.scene.add(new THREE.PointLightHelper(this.pointLight1, 10))
+
+      this.pointLight2 = new THREE.PointLight(0xcc333f, 0.7)
+      this.pointLight2.position.set(200, 250, 300)
+      this.scene.add(this.pointLight2)
+
+      this.scene.add(new THREE.PointLightHelper(this.pointLight2, 10))
     }
 
 
@@ -83,9 +95,12 @@ export default class VectorScene {
 
       this.walkers = []
 
-      let i, walker
-      for(i = 0; i < 50; i++) {
-        walker = new SphereWalker(this.box.geometry.boundingBox)
+      let i, walker, bbox = this.box.geometry.boundingBox
+      for(i = 0; i < 150; i++) {
+        walker = new SphereWalker(bbox)
+        walker.location = new THREE.Vector3(
+          utils.randomFloat(bbox.min.x, bbox.max.x), 0, utils.randomFloat(bbox.min.z, bbox.max.z)
+        )
         walker.setup()
 
         this.walkers.push(walker)
@@ -104,7 +119,20 @@ export default class VectorScene {
     ///////////////////////////////////////////////////////////////////////////////
 
     update(clock) {
+
+
+
+
       this.walkers.forEach((w) => {
+        let gravity = new THREE.Vector3(utils.randomFloat(-0.05, 0.05), utils.randomFloat(-0.1, -0.5), 0)
+        w.applyForce(gravity)
+
+        if(this.spacebarDown) {
+          let wind = new THREE.Vector3(1.0, 0, 0)
+          w.applyForce(wind)
+        }
+
+
         w.update()
         w.edges()
         w.apply()
@@ -129,6 +157,14 @@ export default class VectorScene {
 
       this.camera.aspect = this.viewportWidth / this.viewportHeight
       this.camera.updateProjectionMatrix()
+    }
+
+    keyDown(e) {
+      if(e.which === 32) this.spacebarDown = true
+    }
+
+    keyUp(e) {
+      if(e.which === 32) this.spacebarDown = false
     }
 
   }

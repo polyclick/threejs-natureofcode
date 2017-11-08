@@ -82,7 +82,7 @@ export function randomInt(min, max) {
 
 
 // random element from array
-function randomFromArray(array) {
+export function randomFromArray(array) {
   return array[Math.floor(Math.random() * array.length)]
 }
 

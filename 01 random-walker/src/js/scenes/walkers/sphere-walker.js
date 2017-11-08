@@ -26,9 +26,14 @@ export default class SphereWalker {
 
     setup() {
       this.object = new THREE.Mesh(
-        new THREE.SphereGeometry(25, 16, 16),
-        new THREE.MeshNormalMaterial()
+        new THREE.SphereGeometry(15, 32, 32),
+        new THREE.MeshNormalMaterial({ color: 0xffffff })
       )
+    }
+
+
+    applyForce(force) {
+      this.acceleration.add(force)
     }
 
 
@@ -38,26 +43,27 @@ export default class SphereWalker {
     ///////////////////////////////////////////////////////////////////////////////
 
     update() {
-      this.acceleration.set(
-        utils.randomFloat(-0.4, 0.4),
-        utils.randomFloat(-0.4, 0.4),
-        utils.randomFloat(-0.4, 0.4)
-      )
-
       this.velocity.add(this.acceleration)
       this.location.add(this.velocity)
-
-      this.velocity.clampLength(-5, 5)
+      this.acceleration.multiplyScalar(0)
     }
 
 
     edges() {
-      if(this.location.x < this.bounds.min.x) this.location.x = this.bounds.max.x
-      if(this.location.x > this.bounds.max.x) this.location.x = this.bounds.min.x
-      if(this.location.y < this.bounds.min.y) this.location.y = this.bounds.max.y
-      if(this.location.y > this.bounds.max.y) this.location.y = this.bounds.min.y
-      if(this.location.z < this.bounds.min.z) this.location.z = this.bounds.max.z
-      if(this.location.z > this.bounds.max.z) this.location.z = this.bounds.min.z
+      this.checkAxisEdges(`x`, this.bounds)
+      this.checkAxisEdges(`y`, this.bounds)
+      this.checkAxisEdges(`z`, this.bounds)
+    }
+
+
+    checkAxisEdges(axis, bounds) {
+      if(this.location[axis] < bounds.min[axis]) {
+        this.location[axis] = bounds.min[axis]
+        this.velocity[axis] *= -1.0
+      } else if(this.location[axis] > bounds.max[axis]) {
+        this.location[axis] = bounds.max[axis]
+        this.velocity[axis] *= -1.0
+      }
     }
 
 

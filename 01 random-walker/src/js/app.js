@@ -56,6 +56,8 @@ class App {
 
     // resize
     window.addEventListener(`resize`, (e) => { this.handleResize(e) }, false)
+    window.addEventListener(`keydown`, (e) => { this.handleKeyDown(e) }, false)
+    window.addEventListener(`keyup`, (e) => { this.handleKeyUp(e) }, false)
   }
 
 
@@ -98,6 +100,16 @@ class App {
     this.viewportWidth = window.innerWidth
     this.viewportHeight = window.innerHeight
     this.resize()
+  }
+
+
+  handleKeyDown(e) {
+    this.scene.keyDown(e)
+  }
+
+
+  handleKeyUp(e) {
+    this.scene.keyUp(e)
   }
 
 }
